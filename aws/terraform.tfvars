@@ -1,0 +1,1 @@
+# aws_region = "ap-northeast-1" # 必要に応じてリージョンを固定
