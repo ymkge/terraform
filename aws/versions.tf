@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0" # 使用したいバージョンを指定してください
+      version = "~> 6.0" # 最新のメジャーバージョンに更新
     }
   }
 }

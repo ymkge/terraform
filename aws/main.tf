@@ -2,12 +2,27 @@ provider "aws" {
   region = var.aws_region
 }
 
-# セキュリティグループ（GCPのファイアウォールルールに相当）を定義
+# --- AMI IDを動的に取得するデータソースを追加 ---
+data "aws_ami" "latest_amazon_linux" {
+  most_recent = true
+  owners      = [var.ami_owner]
+
+  filter {
+    name   = "name"
+    values = [var.ami_filter_name]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+}
+
+# --- セキュリティグループ（変更なし、最新の状態） ---
 resource "aws_security_group" "web_sg" {
   name        = "${var.instance_name}-sg"
   description = "Allow HTTP and SSH access"
 
-  # インバウンドルール：HTTP (ポート80) を許可
   ingress {
     from_port   = 80
     to_port     = 80
@@ -15,7 +30,6 @@ resource "aws_security_group" "web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   
-  # インバウンドルール：SSH (ポート22) を許可
   ingress {
     from_port   = 22
     to_port     = 22
@@ -23,11 +37,10 @@ resource "aws_security_group" "web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # アウトバウンドルール：すべてのトラフィックを許可
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1" # -1は全てのプロトコルを意味
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -36,18 +49,19 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
-# EC2インスタンスを定義
+# --- EC2インスタンスを定義（AMIを動的に参照するように更新） ---
 resource "aws_instance" "web_server" {
-  ami           = var.ami
+  # AMIをハードコードする代わりにデータソースのIDを参照
+  ami           = data.aws_ami.latest_amazon_linux.id
   instance_type = var.instance_type
-  # 作成したセキュリティグループをアタッチ
+  
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
   # 起動時に実行されるシェルスクリプト
   user_data = <<-EOF
     #!/bin/bash
-    sudo yum update -y
-    sudo yum install -y httpd
+    sudo dnf update -y
+    sudo dnf install -y httpd
     sudo systemctl start httpd
     sudo systemctl enable httpd
     echo "Hello from Terraform on EC2!" > /var/www/html/index.html
