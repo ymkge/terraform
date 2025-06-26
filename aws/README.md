@@ -1,7 +1,3 @@
-EC2インスタンスをデプロイする手順を分かりやすく説明するREADME.mdです。
-
-Markdown
-
 # AWS EC2 Instance with Terraform
 
 このリポジトリは、Terraform を使用して Amazon Web Services (AWS) に EC2 VM インスタンスをデプロイするための基本的な構成を提供します。
