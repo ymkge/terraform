@@ -12,7 +12,6 @@ variable "region" {
 variable "zone" {
   description = "GCP Zone"
   type        = string
-  type        = string
   default     = "asia-northeast1-a" # 東京リージョンのAゾーンをデフォルトに設定
 }
 
