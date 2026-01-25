@@ -8,7 +8,6 @@ terraform.rc
 override.tf
 override.tf.json
 *tfplan
-.terraform.lock.hcl
 
 Local .tfvars file
 terraform.tfvars

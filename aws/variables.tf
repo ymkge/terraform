@@ -28,3 +28,9 @@ variable "ami_filter_name" {
   type        = string
   default     = "al2023-ami-minimal-*-x86_64" # Amazon Linux 2023の最新AMIを取得するためのパターン
 }
+
+variable "ssh_allowed_cidr" {
+  description = "CIDR block for SSH access"
+  type        = string
+  default     = "0.0.0.0/0"
+}
