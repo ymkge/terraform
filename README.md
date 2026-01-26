@@ -1,6 +1,6 @@
 # Terraform Infrastructure Samples
 
-このリポジトリは、Terraformを使用してAWSおよびGoogle Cloud Platform (GCP) 上に基本的なインフラストラクチャ（Webサーバー）を構築するためのサンプルコードを含んでいます。
+このリポジトリは、Terraformを使用して主要なクラウドプロバイダー（AWS, GCP, Azure）上に基本的なインフラストラクチャ（Webサーバー）を構築するためのサンプルコードを含んでいます。
 
 ## ディレクトリ構成
 
@@ -14,6 +14,11 @@
   - Apache HTTP Serverをインストールし、起動時にサンプルページを作成します。
   - ファイアウォールルールでHTTP (80) のアクセスを許可します。
 
+- **`azure/`**: Azure用のTerraform設定ファイル
+  - Ubuntu Server 22.04 LTSを使用したAzure Virtual Machinesを作成します。
+  - Apache HTTP Serverをインストールし、起動時にサンプルページを作成します。
+  - ネットワークセキュリティグループでHTTP (80) と SSH (22) のアクセスを許可します。
+
 ## 前提条件
 
 このコードを実行するには、以下のツールがインストールされ、適切に設定されている必要があります。
@@ -22,50 +27,25 @@
 - クラウドプロバイダーのCLIツールおよび認証設定:
   - **AWS:** [AWS CLI](https://aws.amazon.com/cli/) (`aws configure` で認証情報を設定)
   - **GCP:** [Google Cloud SDK](https://cloud.google.com/sdk) (`gcloud auth application-default login` で認証情報を設定)
+  - **Azure:** [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) (`az login` で認証情報を設定)
 
 ## 使い方
 
-### AWS
+共通の手順として、各ディレクトリに移動して以下のコマンドを実行します。
 
-1. `aws` ディレクトリに移動します。
-   ```bash
-   cd aws
-   ```
+1. **初期化**: `terraform init`
+2. **計画確認**: `terraform plan`
+3. **適用**: `terraform apply`
 
-2. Terraformを初期化します。
-   ```bash
-   terraform init
-   ```
+### クラウド別補足事項
 
-3. 実行計画を確認し、適用します。
-   ```bash
-   terraform apply
-   ```
-   確認プロンプトが表示されたら `yes` と入力します。
+#### AWS
+- `aws configure` でデフォルトリージョンとクレデンシャルが設定されていることを確認してください。
 
-4. 完了後、出力されたパブリックIPアドレスにブラウザでアクセスして動作を確認できます。
+#### GCP
+- `terraform.tfvars.example` を `terraform.tfvars` にコピーし、ご自身のGCPプロジェクトIDを設定してください。
+- `gcloud auth application-default login` で認証を済ませてください。
 
-### GCP
-
-1. `gcp` ディレクトリに移動します。
-   ```bash
-   cd gcp
-   ```
-
-2. 変数ファイルを作成します。
-   `terraform.tfvars.example` を `terraform.tfvars` にコピーし、ご自身のGCPプロジェクトIDを設定してください。
-   ```bash
-   cp terraform.tfvars.example terraform.tfvars
-   # terraform.tfvars ファイルを開き、project_id = "your-project-id" を編集
-   ```
-
-3. Terraformを初期化します。
-   ```bash
-   terraform init
-   ```
-
-4. 実行計画を確認し、適用します。
-   ```bash
-   terraform apply
-   ```
-   確認プロンプトが表示されたら `yes` と入力します。
+#### Azure
+- `az login` でログインしていることを確認してください。
+- インスタンス作成時に自動生成されるSSH秘密鍵は、`terraform output -raw tls_private_key` で取得可能です。
